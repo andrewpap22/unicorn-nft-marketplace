@@ -6,6 +6,7 @@ import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Button } from '.';
 import images from '../assets';
 
 /// Menu Items component
@@ -41,12 +42,21 @@ const MenuItems = ({ isMobile, active, setActive }) => {
               : 'dark:text-nft-gray-3 text-nft-gray-2'
           }`}
         >
-          <Link href={generateLink(index)}>
-            {item}
-          </Link>
+          <Link href={generateLink(index)}>{item}</Link>
         </li>
       ))}
     </ul>
+  );
+};
+
+/// Button Group component
+const ButtonGroup = () => {
+  const hasConnected = false;
+
+  return hasConnected ? (
+    <Button btnName="Create" classStyles="mx-2 rounded-xl" />
+  ) : (
+    <Button btnName="Connect" classStyles="mx-2 rounded-xl" />
   );
 };
 
@@ -115,9 +125,10 @@ const Navbar = () => {
 
       {/* NavBar Menu Items for non mobile devices */}
       <div className="md:hidden flex">
-        <ul className="list-none flexCenter flex-row">
-          <MenuItems active={active} setActive={setActive} />
-        </ul>
+        <MenuItems active={active} setActive={setActive} />
+        <div className="ml-4">
+          <ButtonGroup />
+        </div>
       </div>
     </nav>
   );
