@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTheme } from 'next-themes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -50,19 +50,37 @@ const MenuItems = ({ isMobile, active, setActive }) => {
 };
 
 /// Button Group component
-const ButtonGroup = () => {
-  const hasConnected = false;
+const ButtonGroup = ({ setActive, router }) => {
+  const hasConnected = true;
 
   return hasConnected ? (
-    <Button btnName="Create" classStyles="mx-2 rounded-xl" />
+    <Button
+      btnName="Create"
+      classStyles="mx-2 rounded-xl"
+      handleClick={() => {
+        setActive('');
+
+        /// redirect to the create NFT page
+        router.push('/create-nft');
+      }}
+    />
   ) : (
-    <Button btnName="Connect" classStyles="mx-2 rounded-xl" />
+    <Button
+      btnName="Connect"
+      classStyles="mx-2 rounded-xl"
+      handleClick={() => {
+        /// connect to the metamask wallet
+      }}
+    />
   );
 };
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const [active, setActive] = useState('Explore NFTs');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const router = useRouter();
 
   return (
     <nav className="flexBetween w-full fixed z-10 p-4 flex-row border-b dark:bg-nft-dark bg-white dark:border-nft-black-1 border-nft-gray-1">
@@ -121,14 +139,55 @@ const Navbar = () => {
             <div className="w-3 h-3 absolute bg-white rounded-full ball" />
           </label>
         </div>
+
+        {/* NavBar Menu Items for non mobile devices */}
+        <div className="md:hidden flex">
+          <MenuItems active={active} setActive={setActive} />
+          <div className="ml-4">
+            <ButtonGroup setActive={setActive} router={router} />
+          </div>
+        </div>
+
       </div>
 
-      {/* NavBar Menu Items for non mobile devices */}
-      <div className="md:hidden flex">
-        <MenuItems active={active} setActive={setActive} />
-        <div className="ml-4">
-          <ButtonGroup />
-        </div>
+      {/* mobile navigation bar styling... */}
+      <div className="hidden md:flex ml-2">
+        {
+          isOpen ? (
+            <Image
+              src={images.cross}
+              objectFit="contain"
+              width={20}
+              height={20}
+              alt="close-menu"
+              onClick={() => setIsOpen(false)}
+              className={theme === 'light' && 'filter invert'}
+            />
+          ) : (
+            <Image
+              src={images.menu}
+              objectFit="contain"
+              width={25}
+              height={25}
+              alt="menu"
+              onClick={() => setIsOpen(true)}
+              className={theme === 'light' && 'filter invert'}
+            />
+          )
+        }
+
+        {
+          isOpen && (
+            <div className="fixed inset-0 top-65 dark:bg-nft-dark bg-white z-10 nav-h flex justify-between flex-col">
+              <div className="flex-1 p-4">
+                <MenuItems active={active} setActive={setActive} isMobile />
+              </div>
+              <div className="p-4 border-t dark:border-nft-black-1 border-nft-gray-1">
+                <ButtonGroup setActive={setActive} router={router} />
+              </div>
+            </div>
+          )
+        }
       </div>
     </nav>
   );
