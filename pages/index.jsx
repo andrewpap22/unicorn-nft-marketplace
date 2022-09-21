@@ -1,8 +1,12 @@
 import React from 'react';
 
+import Banner from '../components/Banner';
+
 const Home = () => (
-  <div>
-    <h1 className="text-3xl font-bold underline bg-teal-500">Hello World!</h1>
+  <div className="flex justify-center sm:px-4 p-12">
+    <div className="w-full minmd:w-4/5">
+      <Banner />
+    </div>
   </div>
 );
 
