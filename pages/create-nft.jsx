@@ -4,11 +4,16 @@ import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
-import { Button } from '../components';
+import { Button, Input } from '../components';
 import images from '../assets';
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
+  const [formInput, setFormInput] = useState({
+    price: '',
+    name: '',
+    description: '',
+  });
   const { theme } = useTheme();
 
   /// Logic to upload the image on the blockchain (IPFS)
@@ -87,6 +92,43 @@ const CreateNFT = () => {
               </aside>
             )}
           </div>
+        </div>
+
+        {/* Custon Inputs */}
+        <Input
+          inputType="input"
+          title="Name"
+          placeholder="Enter the name of your NFT"
+          handleClick={(e) => {
+            setFormInput({ ...formInput, name: e.target.value });
+          }}
+        />
+
+        <Input
+          inputType="textarea"
+          title="Description"
+          placeholder="Enter the description of your NFT"
+          handleClick={(e) => {
+            setFormInput({ ...formInput, description: e.target.value });
+          }}
+        />
+
+        <Input
+          inputType="number"
+          title="Price"
+          placeholder="Enter the price of your NFT"
+          handleClick={(e) => {
+            setFormInput({ ...formInput, price: e.target.value });
+          }}
+        />
+
+        {/* The Create Button */}
+        <div className="mt-7 w-full flex justify-end">
+          <Button
+            btnName="Create NFT"
+            classStyles="rounded-xl"
+            handleClick={() => {}}
+          />
         </div>
       </div>
     </div>
