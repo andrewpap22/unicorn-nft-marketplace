@@ -1,10 +1,11 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { useDropzone } from 'react-dropzone';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
+import { NFTContext } from '../context/NFTContext';
 import { Button, Input } from '../components';
 import images from '../assets';
 
@@ -24,12 +25,14 @@ const client = ipfsHttpClient({
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
+  const { createSale } = useContext(NFTContext);
   const [formInput, setFormInput] = useState({
     price: '',
     name: '',
     description: '',
   });
   const { theme } = useTheme();
+  const router = useRouter();
 
   /// upload NFT to IPFS
   const uploadToInfura = async (file) => {
@@ -45,7 +48,30 @@ const CreateNFT = () => {
     }
   };
 
-  console.log({ fileUrl });
+  const createMarketNFT = async () => {
+    const { name, description, price } = formInput;
+
+    if (!name || !description || !price || !fileUrl) return;
+
+    const data = JSON.stringify({
+      name,
+      description,
+      image: fileUrl,
+    });
+
+    try {
+      const added = await client.add(data);
+
+      /// Dedicated Gateway --- https://docs.infura.io/infura/networks/ipfs/how-to/access-ipfs-content/dedicated-gateways
+      const url = `https://foxy-fxt.infura-ipfs.io/ipfs/${added.path}`;
+
+      await createSale(url, price);
+
+      router.push('/');
+    } catch (error) {
+      console.log('Error creating NFT: ', error);
+    }
+  };
 
   /// Logic to upload the image on the blockchain (IPFS)
   const onDrop = useCallback(async (acceptedFile) => {
@@ -160,7 +186,9 @@ const CreateNFT = () => {
           <Button
             btnName="Create NFT"
             classStyles="rounded-xl"
-            handleClick={() => {}}
+            handleClick={() => {
+              createMarketNFT();
+            }}
           />
         </div>
       </div>

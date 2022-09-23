@@ -5,6 +5,8 @@ import axios from 'axios';
 
 import { MarketAddress, MarketAddressABI } from './constants';
 
+const fetchContract = (signerOrProvider) => new ethers.Contract(MarketAddress, MarketAddressABI, signerOrProvider);
+
 export const NFTContext = React.createContext();
 
 export const NFTProvider = ({ children }) => {
@@ -41,8 +43,26 @@ export const NFTProvider = ({ children }) => {
     window.location.reload();
   };
 
+  const createSale = async (url, formInputPrice, isReselling, id) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    /// convert ETH price to wei (that's what blockchain understands)(ETH is for us humans to understand and handle, blockchain uses wei and gwei)
+    const price = ethers.utils.parseUnits(formInputPrice, 'ether');
+
+    const contract = fetchContract(signer);
+
+    const listingPrice = await contract.getListingPrice();
+
+    const transaction = await contract.createToken(url, price, { value: listingPrice.toString() });
+
+    await transaction.wait();
+  };
+
   return (
-    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount }}>
+    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, createSale }}>
       {children}
     </NFTContext.Provider>
   );
