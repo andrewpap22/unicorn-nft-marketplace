@@ -1,11 +1,26 @@
-import { useState, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useDropzone } from 'react-dropzone';
+import { create as ipfsHttpClient } from 'ipfs-http-client';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
 import { Button, Input } from '../components';
 import images from '../assets';
+
+const projectId = process.env.NEXT_PUBLIC_IPFS_PROJECT_ID;
+const projectSecret = process.env.NEXT_PUBLIC_IPFS_PROJECT_SECRET;
+
+const auth = `Basic ${Buffer.from(`${projectId}:${projectSecret}`).toString('base64')}`;
+
+const client = ipfsHttpClient({
+  host: 'ipfs.infura.io',
+  port: 5001,
+  protocol: 'https',
+  headers: {
+    authorization: auth,
+  },
+});
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
@@ -16,8 +31,26 @@ const CreateNFT = () => {
   });
   const { theme } = useTheme();
 
+  /// upload NFT to IPFS
+  const uploadToInfura = async (file) => {
+    try {
+      const added = await client.add({ content: file });
+
+      /// Dedicated Gateway --- https://docs.infura.io/infura/networks/ipfs/how-to/access-ipfs-content/dedicated-gateways
+      const url = `https://foxy-fxt.infura-ipfs.io/ipfs/${added.path}`;
+
+      setFileUrl(url);
+    } catch (error) {
+      console.log('Error uploading file to IPFS: ', error);
+    }
+  };
+
+  console.log({ fileUrl });
+
   /// Logic to upload the image on the blockchain (IPFS)
-  const onDrop = useCallback((acceptedFiles) => {}, []);
+  const onDrop = useCallback(async (acceptedFile) => {
+    await uploadToInfura(acceptedFile[0]);
+  }, []);
 
   const {
     getRootProps,
