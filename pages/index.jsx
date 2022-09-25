@@ -152,7 +152,11 @@ const Home = () => {
 
           {/* The Best NFT cards */}
           <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
+
+            {/* Fetched NFT's from the blockchain! */}
             {nfts.map((nft) => <NFTCard key={nft.tokenId} nft={nft} />)}
+
+            {/* Demo NFT's */}
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
               <NFTCard
                 key={`nft-${item}`}
@@ -166,6 +170,7 @@ const Home = () => {
                 }}
               />
             ))}
+            
           </div>
         </div>
       </div>
