@@ -2,6 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-}
 
-module.exports = nextConfig
+  images: {
+    domains: ['https://infura-ipfs.io', 'https://foxy-fxt.infura-ipfs.io', 'foxy-fxt.infura-ipfs.io', 'infura-ipfs.io'],
+  },
+};
+
+module.exports = nextConfig;

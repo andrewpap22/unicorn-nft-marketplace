@@ -36,7 +36,9 @@ export const NFTProvider = ({ children }) => {
     /// check if metamask is installed
     if (!window.ethereum) alert('Please install MetaMask first!');
 
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await window.ethereum.request({
+      method: 'eth_requestAccounts',
+    });
 
     setCurrentAccount(accounts[0]);
 
@@ -56,7 +58,9 @@ export const NFTProvider = ({ children }) => {
 
     const listingPrice = await contract.getListingPrice();
 
-    const transaction = await contract.createToken(url, price, { value: listingPrice.toString() });
+    const transaction = await contract.createToken(url, price, {
+      value: listingPrice.toString(),
+    });
 
     await transaction.wait();
   };
@@ -67,21 +71,89 @@ export const NFTProvider = ({ children }) => {
 
     const data = await contract.fetchMarketItems();
 
-    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
-      const tokenURI = await contract.tokenURI(tokenId);
-      const { data: { image, name, description } } = await axios.get(tokenURI);
+    const items = await Promise.all(
+      data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+        const tokenURI = await contract.tokenURI(tokenId);
+        const {
+          data: { image, name, description },
+        } = await axios.get(tokenURI);
 
-      /// convert wei to ETH format
-      const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+        /// convert wei to ETH format
+        const price = ethers.utils.formatUnits(
+          unformattedPrice.toString(),
+          'ether',
+        );
 
-      return { price, tokenId: tokenId.toNumber(), id: tokenId.toNumber(), seller, owner, image, name, description, tokenURI };
-    }));
+        return {
+          price,
+          tokenId: tokenId.toNumber(),
+          id: tokenId.toNumber(),
+          seller,
+          owner,
+          image,
+          name,
+          description,
+          tokenURI,
+        };
+      }),
+    );
+
+    return items;
+  };
+
+  const fetchMyNFTsOrListedNFTs = async (type) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const contract = fetchContract(signer);
+
+    const data = type === 'fetchItemsListed'
+      ? await contract.fetchItemsListed()
+      : await contract.fetchMyNFTs();
+
+    const items = await Promise.all(
+      data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+        const tokenURI = await contract.tokenURI(tokenId);
+        const {
+          data: { image, name, description },
+        } = await axios.get(tokenURI);
+
+        /// convert wei to ETH format
+        const price = ethers.utils.formatUnits(
+          unformattedPrice.toString(),
+          'ether',
+        );
+
+        return {
+          price,
+          tokenId: tokenId.toNumber(),
+          id: tokenId.toNumber(),
+          seller,
+          owner,
+          image,
+          name,
+          description,
+          tokenURI,
+        };
+      }),
+    );
 
     return items;
   };
 
   return (
-    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, createSale, fetchNFTs }}>
+    <NFTContext.Provider
+      value={{
+        nftCurrency,
+        connectWallet,
+        currentAccount,
+        createSale,
+        fetchNFTs,
+        fetchMyNFTsOrListedNFTs,
+      }}
+    >
       {children}
     </NFTContext.Provider>
   );
