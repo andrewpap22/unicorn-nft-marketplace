@@ -13,3 +13,27 @@ npx hardhat node
 node scripts/sample-script.js
 npx hardhat help
 ```
+
+### Compile, Run, Deploy Smart Contract in case MetaMask lags.
+
+Most important step: 
+---
+ 1. Keep the local blockchain running in a separate terminal by hitting: 
+
+```bash
+npx hardhat node
+```
+
+2. Deploy / Re-Deploy the smart contract by hitting:
+
+```bash
+npx hardhat run scripts/deploy.js --network localhost
+```
+
+3. Get the contract address from the terminal and paste it in the `constants.js` file.
+
+4. Run the frontend by hitting:
+
+```bash
+npm run dev || yarn dev
+```
