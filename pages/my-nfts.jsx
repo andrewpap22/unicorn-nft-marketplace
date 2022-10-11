@@ -21,6 +21,15 @@ const MyNFTs = () => {
     );
   }
 
+  /// Logic to fetch the listed NFTs from the blockchain
+  useEffect(() => {
+    fetchMyNFTsOrListedNFTs()
+      .then((items) => {
+        setNfts(items);
+        setIsLoading(false);
+      });
+  }, []);
+
   return (
     <div className="w-full flex justify-start items-center flex-col min-h-screen">
       <div className="w-full flexCenter flex-col">
