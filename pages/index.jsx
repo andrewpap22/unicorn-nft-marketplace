@@ -76,7 +76,7 @@ const Home = () => {
         {/* Home page top sellers */}
         <div>
           <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
-            Best Creators 👷
+            Top Creators 👷
           </h1>
 
           <div className="relative flex-1 max-w-full flex mt-3" ref={parentRef}>
@@ -144,7 +144,7 @@ const Home = () => {
 
           {/* Title */}
           <div className="flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start">
-            <h1 className="flex-1 font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">Best NFTs 🏜️</h1>
+            <h1 className="flex-1 font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">NFTs 🃏🤡🀄</h1>
 
             {/* The search bar for the best nft's */}
             <div>SearchBar</div>
@@ -157,7 +157,7 @@ const Home = () => {
             {nfts.map((nft) => <NFTCard key={nft.tokenId} nft={nft} />)}
 
             {/* Demo NFT's */}
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+            {/* {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
               <NFTCard
                 key={`nft-${item}`}
                 nft={{
@@ -169,7 +169,7 @@ const Home = () => {
                   desription: 'Cool NFT on Sale',
                 }}
               />
-            ))}
+            ))} */}
 
           </div>
         </div>
