@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { NFTContext } from '../context/NFTContext';
-import { CreatorCard, Banner, NFTCard } from '../components';
+import { CreatorCard, Banner, NFTCard, SearchBar } from '../components';
 import images from '../assets';
 // import { makeId } from '../utils/makeId';
 import { getCreators } from '../utils/getTopCreators';
@@ -12,6 +12,8 @@ import { shortenAddress } from '../utils/shortenAddress';
 const Home = () => {
   const [hideButtons, setHideButtons] = useState(false);
   const [nfts, setNfts] = useState([]);
+  const [nftsCopy, setNftsCopy] = useState([]);
+  const [activeSelect, setActiveSelect] = useState('Recently Added');
   const { fetchNFTs } = useContext(NFTContext);
 
   const parentRef = useRef(null);
@@ -60,12 +62,28 @@ const Home = () => {
     fetchNFTs()
       .then((items) => {
         setNfts(items);
-        // setNftsCopy(items);
+        setNftsCopy(items);
         // setIsLoading(false);
       });
   }, []);
 
   const topCreators = getCreators(nfts);
+
+  const onHandleSearch = (value) => {
+    const filteredNfts = nfts.filter(({ name }) => name.toLowerCase().includes(value.toLowerCase()));
+
+    if (filteredNfts.length === 0) {
+      setNfts(nftsCopy);
+    } else {
+      setNfts(filteredNfts);
+    }
+  };
+
+  const onClearSearch = () => {
+    if (nfts.length && nftsCopy.length) {
+      setNfts(nftsCopy);
+    }
+  };
 
   return (
     <div className="flex justify-center sm:px-4 p-12">
@@ -162,7 +180,7 @@ const Home = () => {
             <h1 className="flex-1 font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">NFTs 🃏🤡🀄</h1>
 
             {/* The search bar for the best nft's */}
-            <div>SearchBar</div>
+            <SearchBar activeSelect={activeSelect} setActiveSelect={setActiveSelect} handleSearch={onHandleSearch} clearSearch={onClearSearch} />
           </div>
 
           {/* The Best NFT cards */}
