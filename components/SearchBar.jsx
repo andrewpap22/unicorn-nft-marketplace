@@ -69,7 +69,7 @@ const SearchBar = ({ activeSelect, setActiveSelect, handleSearch, clearSearch })
         {toggle && (
           <div className="absolute top-full left-0 right-0 w-full mt-3 z-10 dark:bg-nft-black-2 bg-white border dark:border-nft-black-2 border-nft-gray-2 py-3 px-4 rounded-md">
             {[
-              'Recently added',
+              'Recently Added',
               'Price (low to high)',
               'Price (high to low)',
             ].map((item) => (

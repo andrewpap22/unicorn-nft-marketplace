@@ -43,7 +43,7 @@ const MyNFTs = () => {
       case 'Price (high to low)':
         setNfts(sortedNfts.sort((a, b) => b.price - a.price));
         break;
-      case 'Recently added':
+      case 'Recently Added':
         setNfts(sortedNfts.sort((a, b) => b.tokenId - a.tokenId));
         break;
       default:

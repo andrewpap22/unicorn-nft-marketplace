@@ -59,15 +59,34 @@ const Home = () => {
 
   /// Logic to fetch the NFTs from the blockchain
   useEffect(() => {
-    fetchNFTs()
-      .then((items) => {
-        setNfts(items);
-        setNftsCopy(items);
-        // setIsLoading(false);
-      });
+    fetchNFTs().then((items) => {
+      setNfts(items);
+      setNftsCopy(items);
+      // setIsLoading(false);
+    });
   }, []);
 
-  const topCreators = getCreators(nfts);
+  /// sort the nfts based on the active select filter
+  useEffect(() => {
+    const sortedNfts = [...nfts];
+
+    switch (activeSelect) {
+      case 'Price (low to high)':
+        setNfts(sortedNfts.sort((a, b) => a.price - b.price));
+        break;
+      case 'Price (high to low)':
+        setNfts(sortedNfts.sort((a, b) => b.price - a.price));
+        break;
+      case 'Recently Added':
+        setNfts(sortedNfts.sort((a, b) => b.tokenId - a.tokenId));
+        break;
+      default:
+        setNfts(nfts);
+        break;
+    }
+  }, [activeSelect]);
+
+  const topCreators = getCreators(nftsCopy);
 
   const onHandleSearch = (value) => {
     const filteredNfts = nfts.filter(({ name }) => name.toLowerCase().includes(value.toLowerCase()));
@@ -174,20 +193,27 @@ const Home = () => {
 
         {/* Home Page Best NFTs */}
         <div className="mt-10">
-
           {/* Title */}
           <div className="flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start">
-            <h1 className="flex-1 font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">NFTs 🃏🤡🀄</h1>
+            <h1 className="flex-1 font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">
+              NFTs 🃏🤡🀄
+            </h1>
 
             {/* The search bar for the best nft's */}
-            <SearchBar activeSelect={activeSelect} setActiveSelect={setActiveSelect} handleSearch={onHandleSearch} clearSearch={onClearSearch} />
+            <SearchBar
+              activeSelect={activeSelect}
+              setActiveSelect={setActiveSelect}
+              handleSearch={onHandleSearch}
+              clearSearch={onClearSearch}
+            />
           </div>
 
           {/* The Best NFT cards */}
           <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
-
             {/* Fetched NFT's from the blockchain! */}
-            {nfts.map((nft) => <NFTCard key={nft.tokenId} nft={nft} />)}
+            {nfts.map((nft) => (
+              <NFTCard key={nft.tokenId} nft={nft} />
+            ))}
 
             {/* Demo NFT's */}
             {/* {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
@@ -203,7 +229,6 @@ const Home = () => {
                 }}
               />
             ))} */}
-
           </div>
         </div>
       </div>
