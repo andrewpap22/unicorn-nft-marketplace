@@ -10,25 +10,17 @@ import { shortenAddress } from '../utils/shortenAddress';
 const MyNFTs = () => {
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeSelect, setActiveSelect] = useState('Recently Added');
 
   const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
-
-  if (isLoading) {
-    return (
-      <div className="flexStart min-h-screen">
-        <Loader />
-      </div>
-    );
-  }
 
   /// Logic to fetch the listed NFTs from the blockchain
   useEffect(() => {
     fetchMyNFTsOrListedNFTs().then((items) => {
       setNfts(items);
       setNftsCopy(items);
-      setIsLoading(false);
+      setLoading(false);
     });
   }, []);
 
@@ -68,6 +60,14 @@ const MyNFTs = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flexStart min-h-screen">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full flex justify-start items-center flex-col min-h-screen">
       <div className="w-full flexCenter flex-col">
@@ -94,7 +94,7 @@ const MyNFTs = () => {
         </div>
       </div>
 
-      {!isLoading && !nfts.length ? (
+      {!loading && nfts.length === 0 ? (
         <div className="flexCenter snm:p-4 p-16">
           <h1 className="font-poppins dark:text-white text-nft-black-1 font-extrabold text-3xl">
             No NFTs Owned 😥

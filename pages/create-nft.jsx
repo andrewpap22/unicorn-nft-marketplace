@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
 import { NFTContext } from '../context/NFTContext';
-import { Button, Input } from '../components';
+import { Button, Input, Loader } from '../components';
 import images from '../assets';
 
 const projectId = process.env.NEXT_PUBLIC_IPFS_PROJECT_ID;
@@ -25,7 +25,7 @@ const client = ipfsHttpClient({
 
 const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
-  const { createSale } = useContext(NFTContext);
+  const { createSale, isLoadingNFT } = useContext(NFTContext);
   const [formInput, setFormInput] = useState({
     price: '',
     name: '',
@@ -99,6 +99,14 @@ const CreateNFT = () => {
   `,
     [isDragAccept, isDragActive, isDragReject],
   );
+
+  if (isLoadingNFT) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center sm:px-4 p-12">

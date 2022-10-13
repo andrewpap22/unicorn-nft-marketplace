@@ -6,20 +6,18 @@ import { NFTContext } from '../context/NFTContext';
 import { Loader, Button, Input } from '../components';
 
 const ResellNFT = () => {
-  const { createSale } = useContext(NFTContext);
+  const { createSale, isLoadingNFT } = useContext(NFTContext);
   const router = useRouter();
   const { id, tokenURI } = router.query;
 
   const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
-  const [loading, setLoading] = useState(true);
 
   const fetchNFT = async () => {
     const { data } = await axios.get(tokenURI);
 
     setPrice(data.price);
     setImage(data.image);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -33,7 +31,7 @@ const ResellNFT = () => {
     router.push('/');
   };
 
-  if (loading) {
+  if (isLoadingNFT) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader />
