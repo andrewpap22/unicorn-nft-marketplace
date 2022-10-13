@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { NFTContext } from '../context/NFTContext';
-import { CreatorCard, Banner, NFTCard, SearchBar } from '../components';
+import { CreatorCard, Banner, NFTCard, SearchBar, Loader } from '../components';
 import images from '../assets';
 // import { makeId } from '../utils/makeId';
 import { getCreators } from '../utils/getTopCreators';
@@ -14,6 +14,7 @@ const Home = () => {
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
   const [activeSelect, setActiveSelect] = useState('Recently Added');
+  const [isLoading, setIsLoading] = useState(true);
   const { fetchNFTs } = useContext(NFTContext);
 
   const parentRef = useRef(null);
@@ -62,7 +63,7 @@ const Home = () => {
     fetchNFTs().then((items) => {
       setNfts(items);
       setNftsCopy(items);
-      // setIsLoading(false);
+      setIsLoading(false);
     });
   }, []);
 
@@ -109,24 +110,33 @@ const Home = () => {
       <div className="w-full minmd:w-4/5">
         {/* Home page Banner */}
         <Banner
-          banner="Discover 🕵️ Collect 🧰 and Sell 💰 extraordinary NFTs 🦄"
+          banner={<>Discover 🕵️ Collect 🧰 and Sell 💰 <br /> extraordinary NFTs 🦄</>}
           parentStyles="justify-start mb-6 h-72 sm:h-60 p-12 xs:p-4 xs:h-44 rounded-3xl"
           childStyles="md:text-4xl sm:text-2xl xs:text-xl text-left"
         />
 
-        {/* Home page top sellers */}
-        <div>
-          <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
-            Top Creators 👷
-          </h1>
+        {!isLoading && !nfts.length ? (
+          <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0 flexCenter">🛑 No 🃏🃏🀄🀄 For Sale❗</h1>
+        ) : isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            {/* Home page top sellers */}
+            <div>
+              <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
+                Top Creators 👷
+              </h1>
 
-          <div className="relative flex-1 max-w-full flex mt-3" ref={parentRef}>
-            <div
-              className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none"
-              ref={scrollRef}
-            >
-              {/* Array of Creators - Mock Data */}
-              {/* {[6, 7, 8, 9, 10].map((item) => (
+              <div
+                className="relative flex-1 max-w-full flex mt-3"
+                ref={parentRef}
+              >
+                <div
+                  className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none"
+                  ref={scrollRef}
+                >
+                  {/* Array of Creators - Mock Data */}
+                  {/* {[6, 7, 8, 9, 10].map((item) => (
                 <CreatorCard
                   key={`creator-${item}`}
                   rank={item}
@@ -136,87 +146,87 @@ const Home = () => {
                 />
               ))} */}
 
-              {/* Top Creators */}
-              {topCreators.map((creator, i) => (
-                <CreatorCard
-                  key={creator.seller}
-                  rank={i + 1}
-                  creatorImage={images[`creator${i + 1}`]}
-                  creatorName={shortenAddress(creator.seller)}
-                  creatorEths={creator.price}
-                />
-              ))}
-
-              {!hideButtons && (
-                <>
-                  {/* Left and Right arrow buttons of the CreatorCards */}
-                  {/* Left Arrow */}
-                  <div
-                    className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0"
-                    onClick={() => {
-                      handleScroll('left');
-                    }}
-                  >
-                    <Image
-                      src={images.left}
-                      layout="fill"
-                      objectFit="contain"
-                      alt="left-arrow"
-                      className={
-                        theme === 'light' ? 'filter invert' : undefined
-                      }
+                  {/* Top Creators */}
+                  {topCreators.map((creator, i) => (
+                    <CreatorCard
+                      key={creator.seller}
+                      rank={i + 1}
+                      creatorImage={images[`creator${i + 1}`]}
+                      creatorName={shortenAddress(creator.seller)}
+                      creatorEths={creator.price}
                     />
-                  </div>
+                  ))}
 
-                  {/* Right Arrow */}
-                  <div
-                    className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0"
-                    onClick={() => {
-                      handleScroll('right');
-                    }}
-                  >
-                    <Image
-                      src={images.right}
-                      layout="fill"
-                      objectFit="contain"
-                      alt="right-arrow"
-                      className={
-                        theme === 'light' ? 'filter invert' : undefined
-                      }
-                    />
-                  </div>
-                </>
-              )}
+                  {!hideButtons && (
+                    <>
+                      {/* Left and Right arrow buttons of the CreatorCards */}
+                      {/* Left Arrow */}
+                      <div
+                        className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0"
+                        onClick={() => {
+                          handleScroll('left');
+                        }}
+                      >
+                        <Image
+                          src={images.left}
+                          layout="fill"
+                          objectFit="contain"
+                          alt="left-arrow"
+                          className={
+                            theme === 'light' ? 'filter invert' : undefined
+                          }
+                        />
+                      </div>
+
+                      {/* Right Arrow */}
+                      <div
+                        className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0"
+                        onClick={() => {
+                          handleScroll('right');
+                        }}
+                      >
+                        <Image
+                          src={images.right}
+                          layout="fill"
+                          objectFit="contain"
+                          alt="right-arrow"
+                          className={
+                            theme === 'light' ? 'filter invert' : undefined
+                          }
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Home Page Best NFTs */}
-        <div className="mt-10">
-          {/* Title */}
-          <div className="flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start">
-            <h1 className="flex-1 font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">
-              NFTs 🃏🤡🀄
-            </h1>
+            {/* Home Page Best NFTs */}
+            <div className="mt-10">
+              {/* Title */}
+              <div className="flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start">
+                <h1 className="flex-1 font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">
+                  NFTs 🃏🤡🀄
+                </h1>
 
-            {/* The search bar for the best nft's */}
-            <SearchBar
-              activeSelect={activeSelect}
-              setActiveSelect={setActiveSelect}
-              handleSearch={onHandleSearch}
-              clearSearch={onClearSearch}
-            />
-          </div>
+                {/* The search bar for the best nft's */}
+                <SearchBar
+                  activeSelect={activeSelect}
+                  setActiveSelect={setActiveSelect}
+                  handleSearch={onHandleSearch}
+                  clearSearch={onClearSearch}
+                />
+              </div>
 
-          {/* The Best NFT cards */}
-          <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
-            {/* Fetched NFT's from the blockchain! */}
-            {nfts.map((nft) => (
-              <NFTCard key={nft.tokenId} nft={nft} />
-            ))}
+              {/* The Best NFT cards */}
+              <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
+                {/* Fetched NFT's from the blockchain! */}
+                {nfts.map((nft) => (
+                  <NFTCard key={nft.tokenId} nft={nft} />
+                ))}
 
-            {/* Demo NFT's */}
-            {/* {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                {/* Demo NFT's */}
+                {/* {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
               <NFTCard
                 key={`nft-${item}`}
                 nft={{
@@ -229,8 +239,10 @@ const Home = () => {
                 }}
               />
             ))} */}
-          </div>
-        </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
